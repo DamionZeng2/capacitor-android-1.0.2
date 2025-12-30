@@ -111,12 +111,21 @@ jobs:
         with:
           name: app-release
           path: android/app/build/outputs/apk/release/*.apk
+      - name: Package Release ZIP
+        if: ${{ env.ANDROID_KEYSTORE_BASE64 != '' }}
+        run: |
+          APK_PATH="$(ls -1 android/app/build/outputs/apk/release/*.apk | head -n 1)"
+          ZIP_NAME="android-${{ github.run_number }}-release.zip"
+          zip -j "$ZIP_NAME" "$APK_PATH"
       - name: Create Release
         if: ${{ env.ANDROID_KEYSTORE_BASE64 != '' }}
         uses: softprops/action-gh-release@v2
         with:
+          tag_name: build-${{ github.run_id }}
+          name: Build ${{ github.run_number }}
+          target_commitish: ${{ github.sha }}
           draft: true
-          files: android/app/build/outputs/apk/release/*.apk
+          files: android-${{ github.run_number }}-release.zip
       - name: Build Debug APK (no signing)
         if: ${{ env.ANDROID_KEYSTORE_BASE64 == '' }}
         run: |
@@ -127,3 +136,18 @@ jobs:
         with:
           name: app-debug
           path: android/app/build/outputs/apk/debug/*.apk
+      - name: Package Debug ZIP
+        if: ${{ env.ANDROID_KEYSTORE_BASE64 == '' }}
+        run: |
+          APK_PATH="$(ls -1 android/app/build/outputs/apk/debug/*.apk | head -n 1)"
+          ZIP_NAME="android-${{ github.run_number }}-debug.zip"
+          zip -j "$ZIP_NAME" "$APK_PATH"
+      - name: Create Release (Debug)
+        if: ${{ env.ANDROID_KEYSTORE_BASE64 == '' }}
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: build-${{ github.run_id }}
+          name: Build ${{ github.run_number }}
+          target_commitish: ${{ github.sha }}
+          draft: true
+          files: android-${{ github.run_number }}-debug.zip
