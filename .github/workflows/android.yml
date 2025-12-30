@@ -81,6 +81,11 @@ jobs:
       - name: Build web
         run: npm run build
       - run: npx cap add android
+      - name: Generate Capacitor assets
+        run: |
+          if [ -f resources/icon.png ] || [ -f resources/logo.png ] || [ -f assets/icon.png ] || [ -f assets/logo.png ] || [ -f assets/icon-only.png ] || [ -f assets/icon-foreground.png ] || [ -f assets/icon-background.png ]; then
+            npx @capacitor/assets generate --android
+          fi
       - run: npx cap sync android
       - name: Setup Android SDK
         uses: android-actions/setup-android@v2
