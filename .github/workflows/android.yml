@@ -124,7 +124,8 @@ jobs:
           tag_name: build-${{ github.run_id }}
           name: Build ${{ github.run_number }}
           target_commitish: ${{ github.sha }}
-          draft: true
+          draft: false
+          prerelease: true
           files: android-${{ github.run_number }}-release.zip
       - name: Build Debug APK (no signing)
         if: ${{ env.ANDROID_KEYSTORE_BASE64 == '' }}
@@ -149,5 +150,6 @@ jobs:
           tag_name: build-${{ github.run_id }}
           name: Build ${{ github.run_number }}
           target_commitish: ${{ github.sha }}
-          draft: true
+          draft: false
+          prerelease: true
           files: android-${{ github.run_number }}-debug.zip
